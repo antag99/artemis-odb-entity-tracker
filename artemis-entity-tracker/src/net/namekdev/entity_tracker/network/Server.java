@@ -57,7 +57,7 @@ public class Server implements Runnable {
 
 		for (int i = 0, n = clientThreads.size(); i < n; ++i) {
 			Thread clientThread = clientThreads.get(i);
-			clientThread.interrupt();
+//			clientThread.interrupt(); thread should die anyway
 			clientThreads.remove(clientThread);
 		}
 
@@ -135,12 +135,12 @@ public class Server implements Runnable {
 				}
 
 				// read as much as possible and then pass it all to listener
-				while (!socket.isClosed()) {
+				while (isRunning && !socket.isClosed()) {
 					 int n = input.available();
 
 					 if (pos == buffer.length || n == 0) {
 						 if (pos > 0) {
-							 connectionListener.bytesReceived(buffer, pos);
+							 connectionListener.bytesReceived(buffer, 0, pos);
 							 pos = 0;
 						 }
 

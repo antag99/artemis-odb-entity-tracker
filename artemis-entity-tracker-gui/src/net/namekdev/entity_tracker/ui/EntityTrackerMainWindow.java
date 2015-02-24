@@ -149,7 +149,7 @@ public class EntityTrackerMainWindow implements UpdateListener {
 	}
 
 	@Override
-	public void added(int entityId, BitSet components) {
+	public void addedEntity(int entityId, BitSet components) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				entitiesTableModel.addEntity(entityId, components);
@@ -158,7 +158,7 @@ public class EntityTrackerMainWindow implements UpdateListener {
 	}
 
 	@Override
-	public void deleted(int entityId) {
+	public void deletedEntity(int entityId) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				entitiesTableModel.removeEntity(entityId);

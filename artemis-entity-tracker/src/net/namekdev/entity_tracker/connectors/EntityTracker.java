@@ -156,7 +156,7 @@ public class EntityTracker extends Manager {
 			inspectNewComponentTypesAndInform();
 		}
 
-		updateListener.added(e.id, componentBitset);
+		updateListener.addedEntity(e.id, componentBitset);
 	}
 
 	@Override
@@ -165,7 +165,7 @@ public class EntityTracker extends Manager {
 			return;
 		}
 
-		updateListener.deleted(e.id);
+		updateListener.deletedEntity(e.id);
 	}
 
 	private void inspectNewComponentTypesAndInform() {
