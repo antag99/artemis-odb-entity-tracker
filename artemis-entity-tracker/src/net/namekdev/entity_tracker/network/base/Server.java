@@ -1,4 +1,4 @@
-package net.namekdev.entity_tracker.network;
+package net.namekdev.entity_tracker.network.base;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,15 +23,15 @@ public class Server implements Runnable {
 	protected final Bag<ClientSocketListener> clients = new Bag<ClientSocketListener>();
 	protected final Bag<Thread> clientThreads = new Bag<Thread>();
 
-	protected ConnectionListenerProvider clientListenerProvider;
+	protected RawConnectionCommunicatorProvider clientListenerProvider;
 	protected int listeningBitset;
 
 
-	public Server(ConnectionListenerProvider clientListenerProvider) {
+	public Server(RawConnectionCommunicatorProvider clientListenerProvider) {
 		this(clientListenerProvider, DEFAULT_PORT);
 	}
 
-	public Server(ConnectionListenerProvider clientListenerProvider, int listeningPort) {
+	public Server(RawConnectionCommunicatorProvider clientListenerProvider, int listeningPort) {
 		this.clientListenerProvider = clientListenerProvider;
 		this.listeningPort = listeningPort;
 	}
@@ -105,18 +105,18 @@ public class Server implements Runnable {
 	}
 
 	protected ClientSocketListener createSocketListener(Socket socket) {
-		ConnectionListener connectionListener = clientListenerProvider.getListener(socket.getRemoteSocketAddress().toString());
+		RawConnectionCommunicator connectionListener = clientListenerProvider.getListener(socket.getRemoteSocketAddress().toString());
 		return new ClientSocketListener(socket, connectionListener);
 	}
 
 
-	protected class ClientSocketListener implements Runnable, ConnectionOutputListener {
+	protected class ClientSocketListener implements Runnable, RawConnectionOutputListener {
 		Socket socket;
 		InputStream input;
 		OutputStream output;
-		ConnectionListener connectionListener;
+		RawConnectionCommunicator connectionListener;
 
-		public ClientSocketListener(Socket socket, ConnectionListener connectionListener) {
+		public ClientSocketListener(Socket socket, RawConnectionCommunicator connectionListener) {
 			this.socket = socket;
 			this.connectionListener = connectionListener;
 		}

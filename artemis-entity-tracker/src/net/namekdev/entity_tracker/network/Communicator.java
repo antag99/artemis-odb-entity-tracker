@@ -1,5 +1,7 @@
 package net.namekdev.entity_tracker.network;
 
+import net.namekdev.entity_tracker.network.base.RawConnectionCommunicator;
+import net.namekdev.entity_tracker.network.base.RawConnectionOutputListener;
 import net.namekdev.entity_tracker.utils.serialization.NetworkDeserializer;
 import net.namekdev.entity_tracker.utils.serialization.NetworkSerialization;
 import net.namekdev.entity_tracker.utils.serialization.NetworkSerializer;
@@ -9,8 +11,8 @@ import net.namekdev.entity_tracker.utils.serialization.NetworkSerializer;
  *
  * @author Namek
  */
-public abstract class Communicator implements ConnectionListener {
-	protected ConnectionOutputListener _output;
+public abstract class Communicator implements RawConnectionCommunicator {
+	protected RawConnectionOutputListener _output;
 	protected final NetworkSerializer _serializer = NetworkSerialization.createSerializer();
 	protected final NetworkDeserializer _deserializer = NetworkSerialization.createDeserializer();
 
@@ -22,7 +24,7 @@ public abstract class Communicator implements ConnectionListener {
 
 
 	@Override
-	public void connected(ConnectionOutputListener output) {
+	public void connected(RawConnectionOutputListener output) {
 		_output = output;
 	}
 

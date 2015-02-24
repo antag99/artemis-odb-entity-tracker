@@ -3,12 +3,9 @@ package net.namekdev.entity_tracker;
 import java.awt.EventQueue;
 
 import net.namekdev.entity_tracker.connectors.UpdateListener;
-import net.namekdev.entity_tracker.network.EntityTrackerCommunicator;
-import net.namekdev.entity_tracker.network.Client;
-import net.namekdev.entity_tracker.network.ConnectionListener;
-import net.namekdev.entity_tracker.network.ConnectionOutputListener;
-import net.namekdev.entity_tracker.network.NetworkWindowConnector;
-import net.namekdev.entity_tracker.network.Server;
+import net.namekdev.entity_tracker.network.ExternalInterfaceCommunicator;
+import net.namekdev.entity_tracker.network.base.Client;
+import net.namekdev.entity_tracker.network.base.Server;
 import net.namekdev.entity_tracker.ui.EntityTrackerMainWindow;
 
 public class StandaloneMain {
@@ -22,7 +19,7 @@ public class StandaloneMain {
 
 	public static UpdateListener init(final String serverName, final int serverPort) {
 		final EntityTrackerMainWindow window = new EntityTrackerMainWindow();
-		final Client client = new Client(new NetworkWindowConnector(window));
+		final Client client = new Client(new ExternalInterfaceCommunicator(window));
 
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {

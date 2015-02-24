@@ -26,9 +26,6 @@ public class ExternalInterfaceCommunicator extends Communicator {
 
 	@Override
 	public int bytesReceived(byte[] bytes, int offset, int length) {
-//		DeserializeResult res = _deserializer.continueDetection(bytes, offset, length);
-
-
 		_deserializer.setSource(bytes, offset, length);
 
 		byte packetType = _deserializer.readByte();

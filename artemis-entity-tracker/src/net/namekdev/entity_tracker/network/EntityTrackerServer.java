@@ -2,46 +2,83 @@ package net.namekdev.entity_tracker.network;
 
 import java.util.BitSet;
 
+import com.artemis.utils.Bag;
+
 import net.namekdev.entity_tracker.connectors.UpdateListener;
+import net.namekdev.entity_tracker.network.base.RawConnectionCommunicator;
+import net.namekdev.entity_tracker.network.base.RawConnectionCommunicatorProvider;
+import net.namekdev.entity_tracker.network.base.Server;
 
-public class EntityTrackerServer implements UpdateListener {
-	EntityTrackerCommunicator communication;
+/**
+ * TODO Consider deriving from Server.
+ *
+ * @author Namek
+ */
+public class EntityTrackerServer implements UpdateListener, RawConnectionCommunicatorProvider {
+	private Server _server;
+	private Bag<EntityTrackerCommunicator> _listeners = new Bag<EntityTrackerCommunicator>();
 
+
+	public EntityTrackerServer() {
+		_server = new Server(this).start();
+	}
 
 
 	@Override
 	public int getListeningBitset() {
-		// TODO Auto-generated method stub
-		return 0;
+		// TODO
+		return ADDED | DELETED;
 	}
 
 	@Override
 	public void addedEntitySystem(String name, BitSet allTypes, BitSet oneTypes, BitSet notTypes) {
-		// TODO Auto-generated method stub
-
+		for (int i = 0, n = _listeners.size(); i < n; ++i) {
+			EntityTrackerCommunicator communicator = _listeners.get(i);
+			communicator.addedEntitySystem(name, allTypes, oneTypes, notTypes);
+		}
 	}
 
 	@Override
-	public void addedManager(String managerName) {
-		// TODO Auto-generated method stub
-
+	public void addedManager(String name) {
+		for (int i = 0, n = _listeners.size(); i < n; ++i) {
+			EntityTrackerCommunicator communicator = _listeners.get(i);
+			communicator.addedManager(name);
+		}
 	}
 
 	@Override
 	public void addedComponentType(String name) {
-		// TODO Auto-generated method stub
-
+		for (int i = 0, n = _listeners.size(); i < n; ++i) {
+			EntityTrackerCommunicator communicator = _listeners.get(i);
+			communicator.addedComponentType(name);
+		}
 	}
 
 	@Override
 	public void addedEntity(int entityId, BitSet components) {
-		// TODO Auto-generated method stub
-
+		for (int i = 0, n = _listeners.size(); i < n; ++i) {
+			EntityTrackerCommunicator communicator = _listeners.get(i);
+			communicator.addedEntity(entityId, components);
+		}
 	}
 
 	@Override
 	public void deletedEntity(int entityId) {
-		// TODO Auto-generated method stub
+		for (int i = 0, n = _listeners.size(); i < n; ++i) {
+			EntityTrackerCommunicator communicator = _listeners.get(i);
+			communicator.deletedEntity(entityId);
+		}
+	}
 
+	// TODO handle disconnection!
+
+	@Override
+	public RawConnectionCommunicator getListener(String remoteName) {
+		// Server requests communicator for given remote.
+
+		EntityTrackerCommunicator newCommunicator = new EntityTrackerCommunicator();
+		_listeners.add(newCommunicator);
+
+		return newCommunicator;
 	}
 }

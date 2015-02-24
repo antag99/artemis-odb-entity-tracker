@@ -1,4 +1,4 @@
-package net.namekdev.entity_tracker.network;
+package net.namekdev.entity_tracker.network.base;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,13 +22,13 @@ public class Client {
 	private final byte[] _buffer = new byte[10240];
 	private int _pos = 0;
 
-	public ConnectionListener connectionListener;
+	public RawConnectionCommunicator connectionListener;
 
 
 	public Client() {
 	}
 
-	public Client(ConnectionListener connectionListener) {
+	public Client(RawConnectionCommunicator connectionListener) {
 		this.connectionListener = connectionListener;
 	}
 
@@ -129,7 +129,7 @@ public class Client {
 		}
 	};
 
-	private final ConnectionOutputListener outputListener = new ConnectionOutputListener() {
+	private final RawConnectionOutputListener outputListener = new RawConnectionOutputListener() {
 		@Override
 		public void send(byte[] buffer, int offset, int length) {
 			try {
