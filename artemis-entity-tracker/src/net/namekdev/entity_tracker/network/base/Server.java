@@ -36,6 +36,9 @@ public class Server implements Runnable {
 		this.listeningPort = listeningPort;
 	}
 
+	protected Server() {
+	}
+
 	/**
 	 * Starts listening in new thread.
 	 */

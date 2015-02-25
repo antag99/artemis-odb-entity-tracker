@@ -10,17 +10,16 @@ import net.namekdev.entity_tracker.network.base.RawConnectionCommunicatorProvide
 import net.namekdev.entity_tracker.network.base.Server;
 
 /**
- * TODO Consider deriving from Server.
  *
  * @author Namek
  */
-public class EntityTrackerServer implements UpdateListener, RawConnectionCommunicatorProvider {
-	private Server _server;
+public class EntityTrackerServer extends Server implements UpdateListener {
 	private Bag<EntityTrackerCommunicator> _listeners = new Bag<EntityTrackerCommunicator>();
 
 
 	public EntityTrackerServer() {
-		_server = new Server(this).start();
+		super();
+		super.clientListenerProvider = _communicatorProvider;
 	}
 
 
@@ -72,13 +71,15 @@ public class EntityTrackerServer implements UpdateListener, RawConnectionCommuni
 
 	// TODO handle disconnection!
 
-	@Override
-	public RawConnectionCommunicator getListener(String remoteName) {
-		// Server requests communicator for given remote.
+	private RawConnectionCommunicatorProvider _communicatorProvider = new RawConnectionCommunicatorProvider() {
+		@Override
+		public RawConnectionCommunicator getListener(String remoteName) {
+			// Server requests communicator for given remote.
 
-		EntityTrackerCommunicator newCommunicator = new EntityTrackerCommunicator();
-		_listeners.add(newCommunicator);
+			EntityTrackerCommunicator newCommunicator = new EntityTrackerCommunicator();
+			_listeners.add(newCommunicator);
 
-		return newCommunicator;
-	}
+			return newCommunicator;
+		}
+	};
 }
