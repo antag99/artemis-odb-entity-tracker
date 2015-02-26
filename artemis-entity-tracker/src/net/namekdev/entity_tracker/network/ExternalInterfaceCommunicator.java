@@ -28,7 +28,7 @@ public class ExternalInterfaceCommunicator extends Communicator {
 	public int bytesReceived(byte[] bytes, int offset, int length) {
 		_deserializer.setSource(bytes, offset, length);
 
-		byte packetType = _deserializer.readByte();
+		byte packetType = _deserializer.readRawByte();
 
 		switch (packetType) {
 			case TYPE_ADDED_ENTITY_SYSTEM: {
@@ -64,7 +64,7 @@ public class ExternalInterfaceCommunicator extends Communicator {
 			default: throw new RuntimeException("Unknown packet type: " + (int)packetType);
 		}
 
-		return length;
+		return _deserializer.getConsumedBytesCount();
 	}
 
 

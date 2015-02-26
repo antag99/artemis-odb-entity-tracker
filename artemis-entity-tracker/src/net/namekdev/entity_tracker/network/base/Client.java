@@ -20,7 +20,7 @@ public class Client {
 	protected OutputStream output;
 	private boolean _isRunning;
 	private final byte[] _buffer = new byte[10240];
-	private int _pos = 0;
+	private int _posLeft = 0, _posRight = 0;
 
 	public RawConnectionCommunicator connectionListener;
 
@@ -44,6 +44,7 @@ public class Client {
 
 		try {
 			socket = new Socket(serverName, serverPort);
+			socket.setTcpNoDelay(true);
 			input = socket.getInputStream();
 			output = socket.getOutputStream();
 			_isRunning = true;
@@ -86,19 +87,30 @@ public class Client {
 				return;
 			}
 
-			if (_pos == _buffer.length || n == 0) {
-				if (_pos > 0) {
-					connectionListener.bytesReceived(_buffer, 0, _pos);
-					_pos = 0;
+			// TODO fix it, it's compleeetely wrong!
+			if (_posRight == _buffer.length || n == 0) {
+				if (_posRight > 0) {
+					int consumed = 0;
+
+					do {
+						int length = _posRight - _posLeft;
+						consumed = connectionListener.bytesReceived(_buffer, _posLeft, length);
+						_posLeft += consumed;
+					}
+					while (consumed > 0 && _posLeft < _posRight);
+				}
+
+				if (_posRight == _posLeft) {
+					_posLeft = _posRight = 0;
 				}
 
 				return;
 			}
 
-			n = Math.min(n, _buffer.length);
+			n = Math.min(n, _buffer.length - _posRight);
 
 			try {
-				input.read(_buffer, 0, n);
+				input.read(_buffer, _posRight, n);
 			}
 			catch (IOException e) {
 				if (_isRunning) {
@@ -107,7 +119,7 @@ public class Client {
 				return;
 			}
 
-			_pos += n;
+			_posRight += n;
 		}
 	}
 

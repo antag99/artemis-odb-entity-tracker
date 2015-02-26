@@ -30,8 +30,32 @@ public class NetworkSerializer extends NetworkSerialization {
 	}
 
 	public NetworkSerializer addByte(byte value) {
+		_buffer[_pos++] = TYPE_BYTE;
 		_buffer[_pos++] = value;
 		return this;
+	}
+
+	public NetworkSerializer addRawByte(byte value) {
+		_buffer[_pos++] = value;
+		return this;
+	}
+
+	protected void addRawShort(short value) {
+		_buffer[_pos++] = (byte) (value >> 8);
+		_buffer[_pos++] = (byte) (value);
+	}
+
+	public NetworkSerializer addInt(int value) {
+		_buffer[_pos++] = TYPE_INT;
+		addRawInt(value);
+		return this;
+	}
+
+	protected void addRawInt(int value) {
+		_buffer[_pos++] = (byte) (value >> 24);
+		_buffer[_pos++] = (byte) (value >> 16);
+		_buffer[_pos++] = (byte) (value >> 8);
+		_buffer[_pos++] = (byte) (value);
 	}
 
 	public NetworkSerializer addString(String value) {
@@ -44,12 +68,6 @@ public class NetworkSerializer extends NetworkSerialization {
 			_buffer[_pos++] = (byte) value.charAt(i);
 		}
 
-		return this;
-	}
-
-	public NetworkSerializer addInt(int value) {
-		_buffer[_pos++] = TYPE_INT;
-		addRawInt(value);
 		return this;
 	}
 
@@ -80,18 +98,6 @@ public class NetworkSerializer extends NetworkSerialization {
 		return _buffer == _ourBuffer
 			? _serializeResult.setup(_buffer, _pos)
 			: new SerializeResult(_buffer, _pos);
-	}
-
-	protected void addRawInt(int value) {
-		_buffer[_pos++] = (byte) value;
-		_buffer[_pos++] = (byte) (value >> 8);
-		_buffer[_pos++] = (byte) (value >> 16);
-		_buffer[_pos++] = (byte) (value >> 24);
-	}
-
-	protected void addRawShort(short value) {
-		_buffer[_pos++] = (byte) value;
-		_buffer[_pos++] = (byte) (value >> 8);
 	}
 
 

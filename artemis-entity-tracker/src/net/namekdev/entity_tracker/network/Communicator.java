@@ -34,6 +34,6 @@ public abstract class Communicator implements RawConnectionCommunicator {
 	}
 
 	protected NetworkSerializer beginPacket(byte packetType) {
-		return _serializer.beginPacket().addByte(packetType);
+		return _serializer.beginPacket().addRawByte(packetType);
 	}
 }

@@ -14,9 +14,9 @@ import com.artemis.utils.Bag;
  * @author Namek
  */
 public class Server implements Runnable {
-	public static final int DEFAULT_PORT = 21542;
+	public static final int DEFAULT_PORT = 87;
 
-	protected int listeningPort;
+	protected int listeningPort = DEFAULT_PORT;
 	protected ServerSocket socket;
 	protected volatile boolean isRunning;
 	protected Thread runningThread;
@@ -28,7 +28,7 @@ public class Server implements Runnable {
 
 
 	public Server(RawConnectionCommunicatorProvider clientListenerProvider) {
-		this(clientListenerProvider, DEFAULT_PORT);
+		this.clientListenerProvider = clientListenerProvider;
 	}
 
 	public Server(RawConnectionCommunicatorProvider clientListenerProvider, int listeningPort) {
@@ -43,6 +43,12 @@ public class Server implements Runnable {
 	 * Starts listening in new thread.
 	 */
 	public Server start() {
+		try {
+			socket = new ServerSocket(listeningPort);
+		}
+		catch (IOException e) {
+			throw new RuntimeException("Couldn't start server on port " + listeningPort, e);
+		}
 		runningThread = new Thread(this);
 		runningThread.start();
 
@@ -79,23 +85,20 @@ public class Server implements Runnable {
 			this.runningThread = Thread.currentThread();
 		}
 
-		try {
-			socket = new ServerSocket(listeningPort);
-			isRunning = true;
-		}
-		catch (IOException e) {
-			throw new RuntimeException("Couldn't start server on port " + listeningPort, e);
-		}
+		isRunning = true;
 
 		while (isRunning) {
 			Socket clientSocket = null;
 			try {
 				clientSocket = socket.accept();
+				clientSocket.setTcpNoDelay(true);
 			}
 			catch (IOException e) {
 				if (isRunning) {
 					throw new RuntimeException("Error accepting client connection", e);
 				}
+
+				return;
 			}
 
 			ClientSocketListener clientListener = createSocketListener(clientSocket);
