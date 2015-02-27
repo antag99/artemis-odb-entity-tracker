@@ -54,7 +54,7 @@ public class EntityTrackerMainWindow implements UpdateListener {
 		initialize();
 	}
 
-	public void initialize() {
+	protected void initialize() {
 		frame = new JFrame();
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.setBounds(100, 100, 959, 823);

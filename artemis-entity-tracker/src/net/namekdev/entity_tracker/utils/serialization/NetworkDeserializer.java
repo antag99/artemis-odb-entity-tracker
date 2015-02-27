@@ -8,10 +8,6 @@ public class NetworkDeserializer extends NetworkSerialization {
 
 
 	public NetworkDeserializer() {
-		this(10240);
-	}
-
-	public NetworkDeserializer(int internalBufferSize) {
 	}
 
 	public void setSource(byte[] bytes, int offset, int length) {

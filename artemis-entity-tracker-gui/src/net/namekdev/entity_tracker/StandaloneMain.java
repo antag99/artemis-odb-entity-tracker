@@ -2,7 +2,6 @@ package net.namekdev.entity_tracker;
 
 import java.awt.EventQueue;
 
-import net.namekdev.entity_tracker.connectors.UpdateListener;
 import net.namekdev.entity_tracker.network.ExternalInterfaceCommunicator;
 import net.namekdev.entity_tracker.network.base.Client;
 import net.namekdev.entity_tracker.network.base.Server;

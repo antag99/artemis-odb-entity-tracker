@@ -11,13 +11,14 @@ import java.net.UnknownHostException;
  * @author Namek
  */
 public class Client {
-	protected String serverName;
+	protected String remoteName;
 	protected int serverPort = Server.DEFAULT_PORT;
 
 	protected Socket socket;
 	protected Thread thread;
 	protected InputStream input;
 	protected OutputStream output;
+
 	private boolean _isRunning;
 	private final byte[] _buffer = new byte[10240];
 	private int _posLeft = 0, _posRight = 0;
@@ -32,24 +33,30 @@ public class Client {
 		this.connectionListener = connectionListener;
 	}
 
+	Client(Socket socket, RawConnectionCommunicator connectionListener) {
+		this.socket = socket;
+		this.connectionListener = connectionListener;
+		_isRunning = socket.isConnected() && !socket.isClosed();
+	}
+
+
 	/**
 	 * Connects to server. You can chain {@code #startThread()} call.
 	 *
-	 * @param serverName
+	 * @param remoteName
 	 * @param serverPort
 	 */
 	public Client connect(String serverName, int serverPort) {
-		this.serverName = serverName;
+		if (socket != null && !socket.isClosed()) {
+			throw new IllegalStateException("Cannot connect twice in the same time.");
+		}
+
+		this.remoteName = serverName;
 		this.serverPort = serverPort;
 
 		try {
 			socket = new Socket(serverName, serverPort);
-			socket.setTcpNoDelay(true);
-			input = socket.getInputStream();
-			output = socket.getOutputStream();
-			_isRunning = true;
-
-			connectionListener.connected(outputListener);
+			initSocket();
 
 			return this;
 		}
@@ -66,16 +73,30 @@ public class Client {
 			throw new RuntimeException("Call #connect() first!");
 		}
 
-		thread = new Thread(connectionWorker);
+		thread = new Thread(threadRunnable);
 		thread.start();
+	}
+
+	void initSocket() {
+		try {
+			socket.setTcpNoDelay(true);
+			input = socket.getInputStream();
+			output = socket.getOutputStream();
+			_isRunning = true;
+
+			connectionListener.connected(outputListener);
+		}
+		catch (IOException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	/**
 	 * Checks for new bytes in network buffer.
-	 * This method can be run manually or called automatically through {@link #startThread()}.
+	 * This method can be run manually or called automatically by {@link #startThread()}.
 	 */
 	public void update() {
-		while (_isRunning) {
+		while (_isRunning && !socket.isClosed()) {
 			int n = 0;
 			try {
 				n = input.available();
@@ -87,7 +108,6 @@ public class Client {
 				return;
 			}
 
-			// TODO fix it, it's compleeetely wrong!
 			if (_posRight == _buffer.length || n == 0) {
 				if (_posRight > 0) {
 					int consumed = 0;
@@ -127,16 +147,35 @@ public class Client {
 		_isRunning = false;
 
 		try {
+			input.close();
+		} catch (Exception e) { }
+
+		try {
+			output.close();
+		} catch (Exception e) { }
+
+		try {
 			socket.close();
 		}
 		catch (IOException e) { }
 	}
 
-	private final Runnable connectionWorker = new Runnable() {
+	final Runnable threadRunnable = new Runnable() {
 		@Override
 		public void run() {
 			while (_isRunning && !socket.isClosed()) {
 				update();
+
+				try {
+					Thread.sleep(100);
+				}
+				catch (InterruptedException e) {
+					if (_isRunning) {
+						throw new RuntimeException(e);
+					}
+
+					return;
+				}
 			}
 		}
 	};
