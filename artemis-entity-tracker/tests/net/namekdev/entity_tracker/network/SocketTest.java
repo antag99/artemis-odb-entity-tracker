@@ -1,5 +1,7 @@
 package net.namekdev.entity_tracker.network;
 
+import java.net.SocketAddress;
+
 import net.namekdev.entity_tracker.network.base.Client;
 import net.namekdev.entity_tracker.network.base.RawConnectionCommunicator;
 import net.namekdev.entity_tracker.network.base.RawConnectionCommunicatorProvider;
@@ -19,7 +21,7 @@ public class SocketTest {
 					}
 
 					@Override
-					public void connected(RawConnectionOutputListener output) {
+					public void connected(SocketAddress remoteAddress, RawConnectionOutputListener output) {
 						System.out.println("server: client connected");
 					}
 
@@ -39,7 +41,7 @@ public class SocketTest {
 			}
 
 			@Override
-			public void connected(RawConnectionOutputListener output) {
+			public void connected(SocketAddress remoteAddress, RawConnectionOutputListener output) {
 				System.out.println("client: connected!");
 			}
 

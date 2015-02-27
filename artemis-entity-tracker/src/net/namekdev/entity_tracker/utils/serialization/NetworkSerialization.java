@@ -1,7 +1,7 @@
 package net.namekdev.entity_tracker.utils.serialization;
 
 public abstract class NetworkSerialization {
-	protected final static byte TYPE_NONE = 0;
+	protected final static byte TYPE_NULL = 3;
 	protected final static byte TYPE_ARRAY = 6;
 
 	public final static byte TYPE_BYTE = 10;

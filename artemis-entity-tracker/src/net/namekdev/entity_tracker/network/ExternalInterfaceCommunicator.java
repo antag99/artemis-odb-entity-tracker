@@ -36,7 +36,7 @@ public class ExternalInterfaceCommunicator extends Communicator {
 				BitSet allTypes = _deserializer.readBitSet();
 				BitSet oneTypes = _deserializer.readBitSet();
 				BitSet notTypes = _deserializer.readBitSet();
-				_listener.addedEntitySystem(name, allTypes, oneTypes, notTypes);
+				_listener.addedSystem(name, allTypes, oneTypes, notTypes);
 				break;
 			}
 			case TYPE_ADDED_MANAGER: {

@@ -127,11 +127,11 @@ public class EntityTrackerMainWindow implements UpdateListener {
 
 	@Override
 	public int getListeningBitset() {
-		return UpdateListener.ADDED | UpdateListener.DELETED;
+		return UpdateListener.ENTITY_ADDED | UpdateListener.ENTITY_DELETED;
 	}
 
 	@Override
-	public void addedEntitySystem(String name, BitSet allTypes, BitSet oneTypes, BitSet notTypes) {
+	public void addedSystem(String name, BitSet allTypes, BitSet oneTypes, BitSet notTypes) {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				systemsTableModel.addSystem(name);

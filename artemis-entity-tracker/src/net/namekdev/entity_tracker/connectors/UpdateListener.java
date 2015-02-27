@@ -8,8 +8,8 @@ import java.util.BitSet;
  * @author Namek
  */
 public interface UpdateListener {
-	public static final int ADDED = 1 << 1;
-	public static final int DELETED = 1 << 2;
+	public static final int ENTITY_ADDED = 1 << 1;
+	public static final int ENTITY_DELETED = 1 << 2;
 //	public static final int CHANGED = 1 << 3;
 
 
@@ -19,7 +19,7 @@ public interface UpdateListener {
 	 */
 	int getListeningBitset();
 
-	void addedEntitySystem(String name, BitSet allTypes, BitSet oneTypes, BitSet notTypes);
+	void addedSystem(String name, BitSet allTypes, BitSet oneTypes, BitSet notTypes);
 
 	void addedManager(String name);
 

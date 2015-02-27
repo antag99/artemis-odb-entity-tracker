@@ -1,5 +1,7 @@
 package net.namekdev.entity_tracker.network;
 
+import java.net.SocketAddress;
+
 import net.namekdev.entity_tracker.network.base.RawConnectionCommunicator;
 import net.namekdev.entity_tracker.network.base.RawConnectionOutputListener;
 import net.namekdev.entity_tracker.utils.serialization.NetworkDeserializer;
@@ -24,7 +26,7 @@ public abstract class Communicator implements RawConnectionCommunicator {
 
 
 	@Override
-	public void connected(RawConnectionOutputListener output) {
+	public void connected(SocketAddress remoteAddress, RawConnectionOutputListener output) {
 		_output = output;
 	}
 

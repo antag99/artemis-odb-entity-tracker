@@ -1,6 +1,10 @@
 package net.namekdev.entity_tracker.network;
 
+import java.net.SocketAddress;
 import java.util.BitSet;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import com.artemis.utils.Bag;
 
@@ -9,14 +13,22 @@ import net.namekdev.entity_tracker.network.base.RawConnectionCommunicator;
 import net.namekdev.entity_tracker.network.base.RawConnectionCommunicatorProvider;
 import net.namekdev.entity_tracker.network.base.RawConnectionOutputListener;
 import net.namekdev.entity_tracker.network.base.Server;
+import net.namekdev.entity_tracker.utils.tuple.Tuple2;
+import net.namekdev.entity_tracker.utils.tuple.Tuple4;
 
 /**
+ * Server listening to new clients, useful to pass into Entity Tracker itself.
+ * Collects data to gather world state for incoming connections.
  *
  * @author Namek
  */
 public class EntityTrackerServer extends Server implements UpdateListener {
 	private Bag<EntityTrackerCommunicator> _listeners = new Bag<EntityTrackerCommunicator>();
+
 	private Bag<String> _managers = new Bag<String>();
+	private Bag<Tuple4<String, BitSet, BitSet, BitSet>> _systems = new Bag<Tuple4<String,BitSet,BitSet,BitSet>>();
+	private Bag<String> _componentTypes = new Bag<String>();
+	private Map<Integer, BitSet> _entities = new HashMap<Integer,BitSet>();
 
 
 	public EntityTrackerServer() {
@@ -28,16 +40,16 @@ public class EntityTrackerServer extends Server implements UpdateListener {
 	@Override
 	public int getListeningBitset() {
 		// TODO
-		return ADDED | DELETED;
+		return ENTITY_ADDED | ENTITY_DELETED;
 	}
 
 	@Override
-	public void addedEntitySystem(String name, BitSet allTypes, BitSet oneTypes, BitSet notTypes) {
+	public void addedSystem(String name, BitSet allTypes, BitSet oneTypes, BitSet notTypes) {
 		for (int i = 0, n = _listeners.size(); i < n; ++i) {
 			EntityTrackerCommunicator communicator = _listeners.get(i);
-			communicator.addedEntitySystem(name, allTypes, oneTypes, notTypes);
+			communicator.addedSystem(name, allTypes, oneTypes, notTypes);
 		}
-		// TODO save that for new future connections
+		_systems.add(Tuple4.create(name, allTypes, oneTypes, notTypes));
 	}
 
 	@Override
@@ -55,7 +67,7 @@ public class EntityTrackerServer extends Server implements UpdateListener {
 			EntityTrackerCommunicator communicator = _listeners.get(i);
 			communicator.addedComponentType(name);
 		}
-		// TODO save that for new future connections
+		_componentTypes.add(name);
 	}
 
 	@Override
@@ -64,7 +76,7 @@ public class EntityTrackerServer extends Server implements UpdateListener {
 			EntityTrackerCommunicator communicator = _listeners.get(i);
 			communicator.addedEntity(entityId, components);
 		}
-		// TODO save that for new future connections
+		_entities.put(entityId, components);
 	}
 
 	@Override
@@ -73,7 +85,7 @@ public class EntityTrackerServer extends Server implements UpdateListener {
 			EntityTrackerCommunicator communicator = _listeners.get(i);
 			communicator.deletedEntity(entityId);
 		}
-		// TODO save that for new future connections
+		_entities.remove(entityId);
 	}
 
 	// TODO handle disconnection!
@@ -86,14 +98,25 @@ public class EntityTrackerServer extends Server implements UpdateListener {
 			EntityTrackerCommunicator newCommunicator = new EntityTrackerCommunicator() {
 
 				@Override
-				public void connected(RawConnectionOutputListener output) {
-					super.connected(output);
+				public void connected(SocketAddress remoteAddress, RawConnectionOutputListener output) {
+					super.connected(remoteAddress, output);
+
+					for (int i = 0; i < _systems.size(); ++i) {
+						Tuple4<String, BitSet, BitSet, BitSet> system = _systems.get(i);
+						addedSystem(system.item1, system.item2, system.item3, system.item4);
+					}
 
 					for (int i = 0; i < _managers.size(); ++i) {
 						addedManager(_managers.get(i));
 					}
 
-					// TODO notify of rest data
+					for (int i = 0; i < _componentTypes.size(); ++i) {
+						addedComponentType(_componentTypes.get(i));
+					}
+
+					for (Entry<Integer, BitSet> entity : _entities.entrySet()) {
+						addedEntity(entity.getKey(), entity.getValue());
+					}
 				}
 
 			};

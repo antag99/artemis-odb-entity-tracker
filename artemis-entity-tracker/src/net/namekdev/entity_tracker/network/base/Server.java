@@ -73,7 +73,6 @@ public class Server implements Runnable {
 		catch (IOException e) {
 			throw new RuntimeException("Couldn't shutdown server.", e);
 		}
-
 	}
 
 	@Override

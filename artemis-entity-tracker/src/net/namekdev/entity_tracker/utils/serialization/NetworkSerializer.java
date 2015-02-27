@@ -59,6 +59,10 @@ public class NetworkSerializer extends NetworkSerialization {
 	}
 
 	public NetworkSerializer addString(String value) {
+		if (tryAddNullable(value)) {
+			return this;
+		}
+
 		_buffer[_pos++] = TYPE_STRING;
 
 		short n = (short) value.length();
@@ -71,25 +75,40 @@ public class NetworkSerializer extends NetworkSerialization {
 		return this;
 	}
 
-	public NetworkSerializer addBitset(BitSet bitset) {
+	public NetworkSerializer addBitSet(BitSet bitset) {
+		if (tryAddNullable(bitset)) {
+			return this;
+		}
+
 		_buffer[_pos++] = TYPE_BITSET;
 
-		int bitsCount = bitset.size();
-		addRawInt(bitsCount);
+		int bitsCount = bitset.length();
+		addRawShort((short) bitsCount);
 
-		int i = 0;
+		int i = 0, value;
 		while (i < bitsCount) {
-			int value = 0;
-			for (int j = 0; j < 32 && j < bitsCount; ++j) {
-				boolean bit = bitset.get(i++);
-				value |= (bit ? 1 : 0);
-				value <<= 1;
+			value = 0;
+			for (int j = 0; j < Integer.SIZE && j < bitsCount; ++j, ++i) {
+				boolean bit = bitset.get(i);
+
+				if (bit) {
+					value |= 1 << i;
+				}
 			}
 
 			addRawInt(value);
 		}
 
 		return this;
+	}
+
+	protected boolean tryAddNullable(Object data) {
+		if (data == null) {
+			_buffer[_pos++] = TYPE_NULL;
+			return true;
+		}
+
+		return false;
 	}
 
 	public SerializeResult endPacket() {

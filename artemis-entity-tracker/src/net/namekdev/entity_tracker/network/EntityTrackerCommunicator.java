@@ -29,17 +29,17 @@ public class EntityTrackerCommunicator extends Communicator implements UpdateLis
 
 	@Override
 	public int getListeningBitset() {
-		return ADDED | DELETED;
+		return ENTITY_ADDED | ENTITY_DELETED;
 	}
 
 	@Override
-	public void addedEntitySystem(String name, BitSet allTypes, BitSet oneTypes, BitSet notTypes) {
+	public void addedSystem(String name, BitSet allTypes, BitSet oneTypes, BitSet notTypes) {
 		send(
 			beginPacket(TYPE_ADDED_ENTITY_SYSTEM)
 			.addString(name)
-			.addBitset(allTypes)
-			.addBitset(oneTypes)
-			.addBitset(notTypes)
+			.addBitSet(allTypes)
+			.addBitSet(oneTypes)
+			.addBitSet(notTypes)
 		);
 	}
 
@@ -64,7 +64,7 @@ public class EntityTrackerCommunicator extends Communicator implements UpdateLis
 		send(
 			beginPacket(TYPE_ADDED_ENTITY)
 			.addInt(entityId)
-			.addBitset(components)
+			.addBitSet(components)
 		);
 	}
 

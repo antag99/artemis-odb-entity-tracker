@@ -45,6 +45,10 @@ public class NetworkDeserializer extends NetworkSerialization {
 	}
 
 	public String readString() {
+		if (checkNull()) {
+			return null;
+		}
+
 		checkType(TYPE_STRING);
 		short length = readRawShort();
 
@@ -57,8 +61,27 @@ public class NetworkDeserializer extends NetworkSerialization {
 	}
 
 	public BitSet readBitSet() {
-		// TODO
-		throw new RuntimeException("not yet implemented");
+		if (checkNull()) {
+			return null;
+		}
+
+		checkType(TYPE_BITSET);
+
+		short bitsCount = readRawShort();
+		BitSet bitset = new BitSet(bitsCount);
+
+		//TODO!
+		int i = 0;//bitsCount % Integer.SIZE;
+		while (i < bitsCount) {
+			int value = readRawInt();
+
+
+			//bitset.
+
+			i += Integer.SIZE;
+		}
+
+		return bitset;
 	}
 
 	public byte readRawByte() {
@@ -91,5 +114,14 @@ public class NetworkDeserializer extends NetworkSerialization {
 		if (srcType != type) {
 			throw new RuntimeException("Types are divergent, expected: " + type + ", got: " + srcType);
 		}
+	}
+
+	protected boolean checkNull() {
+		if (_source[_sourcePos] == TYPE_NULL) {
+			++_sourcePos;
+			return true;
+		}
+
+		return false;
 	}
 }

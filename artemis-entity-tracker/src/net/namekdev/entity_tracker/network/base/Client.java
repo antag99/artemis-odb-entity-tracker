@@ -84,7 +84,7 @@ public class Client {
 			output = socket.getOutputStream();
 			_isRunning = true;
 
-			connectionListener.connected(outputListener);
+			connectionListener.connected(socket.getRemoteSocketAddress(), outputListener);
 		}
 		catch (IOException e) {
 			throw new RuntimeException(e);

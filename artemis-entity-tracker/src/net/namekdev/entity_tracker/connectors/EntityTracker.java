@@ -94,7 +94,7 @@ public class EntityTracker extends Manager {
 			systemsInfo.add(info);
 			systemsInfoByName.put(systemName, info);
 
-			updateListener.addedEntitySystem(systemName, aspectInfo.allTypesBitset, aspectInfo.oneTypesBitset, aspectInfo.exclusionTypesBitset);
+			updateListener.addedSystem(systemName, aspectInfo.allTypesBitset, aspectInfo.oneTypesBitset, aspectInfo.exclusionTypesBitset);
 		}
 
 		ImmutableBag<Manager> managers = world.getManagers();
@@ -140,7 +140,7 @@ public class EntityTracker extends Manager {
 
 	@Override
 	public void added(Entity e) {
-		if (updateListener == null || (updateListener.getListeningBitset() & UpdateListener.ADDED) == 0) {
+		if (updateListener == null || (updateListener.getListeningBitset() & UpdateListener.ENTITY_ADDED) == 0) {
 			return;
 		}
 
@@ -161,7 +161,7 @@ public class EntityTracker extends Manager {
 
 	@Override
 	public void deleted(Entity e) {
-		if (updateListener == null || (updateListener.getListeningBitset() & UpdateListener.DELETED) == 0) {
+		if (updateListener == null || (updateListener.getListeningBitset() & UpdateListener.ENTITY_DELETED) == 0) {
 			return;
 		}
 
