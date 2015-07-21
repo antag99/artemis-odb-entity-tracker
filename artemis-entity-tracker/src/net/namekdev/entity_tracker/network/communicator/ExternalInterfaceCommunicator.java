@@ -95,6 +95,21 @@ public class ExternalInterfaceCommunicator extends Communicator implements World
 				_listener.deletedEntity(entityId);
 				break;
 			}
+			case TYPE_UPDATE_COMPONENT_STATE: {
+				int entityId = _deserializer.readInt();
+				int index = _deserializer.readInt();
+				int size = _deserializer.beginArray();
+
+				Object[] values = new Object[size];
+
+				for (int i = 0; i < size; ++i) {
+					// TODO read field values to update entity component
+				}
+
+				_listener.updateComponentState(entityId, index, values);
+
+				break;
+			}
 
 			default: throw new RuntimeException("Unknown packet type: " + (int)packetType);
 		}

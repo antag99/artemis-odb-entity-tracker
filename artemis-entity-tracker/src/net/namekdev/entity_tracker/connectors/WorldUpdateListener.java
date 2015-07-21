@@ -33,5 +33,7 @@ public interface WorldUpdateListener {
 
 	void deletedEntity(int entityId);
 
+	void updateComponentState(int entityId, int componentIndex, Object[] values);
+
 
 }

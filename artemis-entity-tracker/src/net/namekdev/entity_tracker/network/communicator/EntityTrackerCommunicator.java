@@ -39,6 +39,12 @@ public class EntityTrackerCommunicator extends Communicator implements WorldUpda
 				_worldController.setSystemState(systemName, isSystemOn);
 				break;
 			}
+			case TYPE_REQUEST_UPDATE_COMPONENT_STATE: {
+				int entityId = _deserializer.readInt();
+				int componentIndex = _deserializer.readInt();
+				// TODO
+				break;
+			}
 
 			default: throw new RuntimeException("Unknown packet type: " + (int)packetType);
 		}
@@ -121,5 +127,18 @@ public class EntityTrackerCommunicator extends Communicator implements WorldUpda
 			beginPacket(TYPE_DELETED_ENTITY)
 			.addInt(entityId)
 		);
+	}
+
+	@Override
+	public void updateComponentState(int entityId, int componentIndex, Object[] values) {
+		NetworkSerializer p =
+			beginPacket(TYPE_UPDATE_COMPONENT_STATE)
+			.addInt(entityId)
+			.addInt(componentIndex)
+			.addInt(values.length);
+
+		for (int i = 0, n = values.length; i < n; ++i) {
+			p.addSomething(values[i]);
+		}
 	}
 }

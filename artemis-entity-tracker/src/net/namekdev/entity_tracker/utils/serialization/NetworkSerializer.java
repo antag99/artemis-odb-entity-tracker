@@ -76,6 +76,10 @@ public class NetworkSerializer extends NetworkSerialization {
 		_buffer[_pos++] = (byte) (value & 0xFF);
 	}
 
+	public void addSomething(Object object) {
+		// TODO guess object type or throw exc
+	}
+
 	public NetworkSerializer addString(String value) {
 		if (tryAddNullable(value)) {
 			return this;

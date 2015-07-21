@@ -292,4 +292,10 @@ public class EntityTrackerMainWindow implements WorldUpdateListener {
 			worldController.setSystemState(systemName, desiredSystemState);
 		}
 	};
+
+
+	@Override
+	public void updateComponentState(int entityId, int componentIndex, Object[] values) {
+		// TODO
+	}
 }

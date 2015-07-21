@@ -32,6 +32,11 @@ import com.artemis.utils.reflect.Field;
 import com.artemis.utils.reflect.Method;
 import com.artemis.utils.reflect.ReflectionException;
 
+/**
+ * @todo IDEA: annotation for systems/managers safe enough to be turned off/on
+ * @author Namek
+ *
+ */
 public class EntityTracker extends Manager implements WorldController {
 	private WorldUpdateListener updateListener;
 

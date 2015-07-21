@@ -35,8 +35,9 @@ public class ComponentDataPanel extends JPanel {
 
 			add(label);
 			add(value);
-
 		}
+
+		// TODO make request for component data
 
 		revalidate();
 		repaint();
